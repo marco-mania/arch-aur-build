@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+set -e
+
+if [ "$#" -ne 1 ]; then
+  echo -e "Please provide AUR package name to build."
+  exit 1
+fi
+
+package=$1
+
+cd /build
+mkdir $package
+chown -R makepkg:users $package
+
+sudo -u makepkg git clone --depth 1 https://aur.archlinux.org/$package.git $package
+
+cd $package
+
+pacman -Syu --noconfirm
+sudo -u makepkg makepkg --noconfirm -sf
+sudo -u makepkg makepkg --printsrcinfo > .SRCINFO
+
+mv /home/makepkg/out/* /pkg
+
+/refresh-repo

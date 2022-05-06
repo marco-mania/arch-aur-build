@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -e
+
+if [ "$#" -ne 1 ]; then
+  echo -e "Please provide AUR package name to remove."
+  exit 1
+fi
+
+package=$1
+
+cd /pkg
+
+repo-remove n128.db.tar.gz $package

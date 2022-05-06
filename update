@@ -1,0 +1,52 @@
+#!/bin/bash
+
+set -e
+
+YELLOW='\033[0;33m'
+GREEN='\033[0;32m'
+NC='\033[0m'
+
+#1: file, 2: key
+function value() {
+    local line_number=$(grep -Fn "$2" "$1" | cut --delimiter=":" --fields=1)
+    let "line_number=line_number+1"
+    key="$(sed "${line_number}q;d" "$1")"
+    echo "$key"
+}
+
+#1: package name
+function version_aur() {
+    curl -s "https://aur.archlinux.org/rpc?v=5&type=info&arg=$1" | jq -r '.results[].Version // ""'
+}
+
+TMPDIR=$(mktemp -d)
+REPODB="/pkg/n128.db.tar.gz"
+
+tar xf $REPODB -C $TMPDIR
+
+mapfile -t FILES < <(find $TMPDIR -mindepth 2 -maxdepth 2 -type f \( -iname "desc" \) | sort -V)
+
+BUILD_FLAG=0
+for file in "${FILES[@]}"; do
+
+    name="$(value $file '%NAME%')"
+    repo_version=$(value $file '%VERSION%')
+
+    remote_version=$(version_aur $name)
+
+    if [[ $(vercmp $repo_version $remote_version) -lt 0 ]]; then
+        echo -e "${YELLOW}Outdated AUR package found${NC}: $name, version in repo: $repo_version, version in AUR: $remote_version"
+        echo -e "Start building package..."
+        ./add "$name"
+        BUILD_FLAG=1
+    else
+        echo -e "${GREEN}AUR package up to date${NC}: $name, version in repo: $repo_version"
+    fi
+
+done
+
+if [ $BUILD_FLAG -eq 1 ]; then
+    ./refresh-repo
+fi
+
+rm -rf $TMPDIR
