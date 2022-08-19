@@ -26,7 +26,6 @@ tar xf $REPODB -C $TMPDIR
 
 mapfile -t FILES < <(find $TMPDIR -mindepth 2 -maxdepth 2 -type f \( -iname "desc" \) | sort -V)
 
-BUILD_FLAG=0
 for file in "${FILES[@]}"; do
 
     name="$(value $file '%NAME%')"
@@ -38,15 +37,10 @@ for file in "${FILES[@]}"; do
         echo -e "${YELLOW}Outdated AUR package found${NC}: $name, version in repo: $repo_version, version in AUR: $remote_version"
         echo -e "Start building package..."
         ./add "$name"
-        BUILD_FLAG=1
     else
         echo -e "${GREEN}AUR package up to date${NC}: $name, version in repo: $repo_version"
     fi
 
 done
-
-if [ $BUILD_FLAG -eq 1 ]; then
-    ./refresh-repo
-fi
 
 rm -rf $TMPDIR

@@ -7,6 +7,38 @@ if [ "$#" -ne 1 ]; then
   exit 1
 fi
 
+function parse_key_value {
+
+    local filename="$1"
+    local fkey="$2"
+
+    if [[ ! -f ${filename} ]]; then
+        echo "Error: File ${file} is not available."
+        return 1
+    fi
+
+    if [[ "$2" == "" ]]; then
+        echo "Key name not provided."
+        return 1
+    fi
+
+    cat ${filename} | while read line || [[ -n $line ]];
+    do
+        [[ ${line//[[:space:]]/} =~ ^#.* || -z "$line" ]] && continue
+        echo $line | tr "=" "\n" | while read -r key; do
+            read -r value
+            #echo "key: ${key}, value: ${value}";
+            if [[ "${key}" == "${fkey}" ]]; then
+                echo -n ${value}
+                break
+            fi
+        done
+    done
+
+    return 0
+
+}
+
 package=$1
 
 cd /build
@@ -21,6 +53,13 @@ pacman -Syu --noconfirm
 sudo -u makepkg makepkg --noconfirm -sf
 sudo -u makepkg makepkg --printsrcinfo > .SRCINFO
 
+pkgbase=$(parse_key_value .SRCINFO pkgbase)
+pkgver=$(parse_key_value .SRCINFO pkgver)
+pkgrel=$(parse_key_value .SRCINFO pkgrel)
+arch=$(parse_key_value .SRCINFO arch)
+
 mv /home/makepkg/out/* /pkg
 
-/refresh-repo
+cd /pkg
+
+repo-add n128.db.tar.zst ${pkgbase}-${pkgver}-${pkgrel}-${arch}.pkg.tar.zst

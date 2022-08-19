@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-set -e
-
-cd /pkg
-
-repo-add n128.db.tar.gz *.pkg.tar.zst

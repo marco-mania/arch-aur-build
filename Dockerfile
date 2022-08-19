@@ -13,4 +13,4 @@ RUN pacman -Syu --noconfirm --needed base base-devel git asp curl jq && \
 VOLUME /pkg /build
 
 COPY sudoers /etc/sudoers
-COPY add remove update refresh-repo /
+COPY add remove update refresh /
