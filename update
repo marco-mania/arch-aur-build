@@ -20,7 +20,7 @@ function version_aur() {
 }
 
 TMPDIR=$(mktemp -d)
-REPODB="/pkg/n128.db.tar.gz"
+REPODB="/pkg/n128.db.tar.zst"
 
 tar xf $REPODB -C $TMPDIR
 
