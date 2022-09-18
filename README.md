@@ -6,25 +6,25 @@ Build Arch Linux AUR packages in a docker container.
 
 Within the repo with the `Dockerfile`:
 
-    sudo docker build -t arch-aur-build .
+    docker build -t arch-aur-build .
 
 ## Build AUR packages and add to repo
 
 The following command will download AUR package, build it and add it to the repo:
 
-    sudo docker run --rm -v /path/to/repos/myrepo/os/x86_64:/pkg arch-aur-build /bin/bash -c '/add <package>'
+    docker run --rm -v /path/to/repos/myrepo/os/x86_64:/pkg arch-aur-build /bin/bash -c '/add <package>'
 
 ## Remove package from repo
 
-    sudo docker run --rm -v /path/to/archlinux/repos/myrepo/os/x86_64:/pkg arch-aur-build /bin/bash -c '/remove <package>'
+    docker run --rm -v /path/to/archlinux/repos/myrepo/os/x86_64:/pkg arch-aur-build /bin/bash -c '/remove <package>'
 
 ## Check AUR packages versions in repo and build new package if new version available
 
-    sudo docker run --rm -v /path/to/archlinux/repos/myrepo/os/x86_64:/pkg arch-aur-build /bin/bash -c '/update'
+    docker run --rm -v /path/to/archlinux/repos/myrepo/os/x86_64:/pkg arch-aur-build /bin/bash -c '/update'
 
 ## Refresh repo
 
-    sudo docker run --rm -v /path/to/archlinux/repos/myrepo/os/x86_64:/pkg arch-aur-build /bin/bash -c '/refresh'
+    docker run --rm -v /path/to/archlinux/repos/myrepo/os/x86_64:/pkg arch-aur-build /bin/bash -c '/refresh'
 
 ## Compiled package location
 
