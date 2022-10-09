@@ -11,4 +11,4 @@ package=$1
 
 cd /pkg
 
-repo-remove n128.db.tar.gz $package
+repo-remove n128.db.tar.zst $package
