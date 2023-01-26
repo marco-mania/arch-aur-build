@@ -1,4 +1,4 @@
-FROM archlinux:latest
+FROM docker.io/archlinux:latest
 
 RUN pacman -Syu --noconfirm --needed base base-devel git asp curl jq && \
     useradd -d /home/makepkg makepkg && \
