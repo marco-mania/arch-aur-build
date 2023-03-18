@@ -4,4 +4,4 @@ set -e
 
 cd /pkg
 
-repo-add n128.db.tar.zst *.pkg.tar.zst
+repo-add n128.db.tar.zst ./*.pkg.tar.zst

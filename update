@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -e
 
@@ -8,8 +8,9 @@ NC='\033[0m'
 
 #1: file, 2: key
 function value() {
-    local line_number=$(grep -Fn "$2" "$1" | cut --delimiter=":" --fields=1)
-    let "line_number=line_number+1"
+    local line_number
+    line_number=$(grep -Fn "$2" "$1" | cut --delimiter=":" --fields=1)
+    (( line_number=line_number+1 ))
     key="$(sed "${line_number}q;d" "$1")"
     echo "$key"
 }
@@ -22,18 +23,18 @@ function version_aur() {
 TMPDIR=$(mktemp -d)
 REPODB="/pkg/n128.db.tar.zst"
 
-tar xf $REPODB -C $TMPDIR
+tar --use-compress-program=unzstd -xf $REPODB -C "$TMPDIR"
 
-mapfile -t FILES < <(find $TMPDIR -mindepth 2 -maxdepth 2 -type f \( -iname "desc" \) | sort -V)
+mapfile -t FILES < <(find "$TMPDIR" -mindepth 2 -maxdepth 2 -type f \( -iname "desc" \) | sort -V)
 
 for file in "${FILES[@]}"; do
 
-    name="$(value $file '%NAME%')"
-    repo_version=$(value $file '%VERSION%')
+    name="$(value "$file" '%NAME%')"
+    repo_version=$(value "$file" '%VERSION%')
 
-    remote_version=$(version_aur $name)
+    remote_version=$(version_aur "$name")
 
-    if [[ $(vercmp $repo_version $remote_version) -lt 0 ]]; then
+    if [[ $(vercmp "$repo_version" "$remote_version") -lt 0 ]]; then
         echo -e "${YELLOW}Outdated AUR package found${NC}: $name, version in repo: $repo_version, version in AUR: $remote_version"
         echo -e "Start building package..."
         ./add "$name"
@@ -43,4 +44,4 @@ for file in "${FILES[@]}"; do
 
 done
 
-rm -rf $TMPDIR
+rm -rf "$TMPDIR"
