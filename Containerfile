@@ -1,6 +1,6 @@
 FROM docker.io/archlinux:latest
 
-RUN pacman -Syu --noconfirm --needed base base-devel git asp curl jq && \
+RUN pacman -Syu --noconfirm --needed base base-devel git asp curl jq zstd && \
     useradd -d /home/makepkg makepkg && \
     mkdir -p /home/makepkg/{.config/pacman,.gnupg,out} && \
     echo 'MAKEFLAGS="-j$(nproc)"' >> /home/makepkg/.config/pacman/makepkg.conf && \
