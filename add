@@ -22,8 +22,7 @@ function parse_key_value {
         return 1
     fi
 
-    cat ${filename} | while read line || [[ -n $line ]];
-    do
+    cat ${filename} | while read line || [[ -n $line ]]; do
         [[ ${line//[[:space:]]/} =~ ^#.* || -z "$line" ]] && continue
         echo $line | tr "=" "\n" | while read -r key; do
             read -r value
@@ -57,6 +56,10 @@ pkgbase=$(parse_key_value .SRCINFO pkgbase)
 pkgver=$(parse_key_value .SRCINFO pkgver)
 pkgrel=$(parse_key_value .SRCINFO pkgrel)
 arch=$(parse_key_value .SRCINFO arch)
+
+if [ "$arch" != "any" ]; then
+    arch=$(uname -m)
+fi
 
 mv /home/makepkg/out/* /pkg
 
