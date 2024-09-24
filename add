@@ -38,6 +38,12 @@ function parse_key_value {
 
 }
 
+
+echo "[localrepo]" >> /etc/pacman.conf
+echo "SigLevel = Optional TrustAll" >> /etc/pacman.conf
+echo "Server = file:///pkg" >> /etc/pacman.conf
+pacman -Sy
+
 package=$1
 
 cd /build
@@ -65,4 +71,4 @@ mv /home/makepkg/out/* /pkg
 
 cd /pkg
 
-repo-add n128.db.tar.zst ${pkgbase}-${pkgver}-${pkgrel}-${arch}.pkg.tar.zst
+repo-add localrepo.db.tar.zst ${pkgbase}-${pkgver}-${pkgrel}-${arch}.pkg.tar.zst

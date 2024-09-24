@@ -21,7 +21,7 @@ function version_aur() {
 }
 
 TMPDIR=$(mktemp -d)
-REPODB="/pkg/n128.db.tar.zst"
+REPODB="/pkg/localrepo.db.tar.zst"
 
 tar --use-compress-program=unzstd -xf $REPODB -C "$TMPDIR"
 
