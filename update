@@ -9,7 +9,7 @@ do
     esac
 done
 
-if [[ "$repo_name" != "" ]]; then
+if [[ "$repo_name" == "" ]]; then
     echo "Missing repo name"
     exit 1
 fi

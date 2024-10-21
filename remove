@@ -10,12 +10,12 @@ do
     esac
 done
 
-if [[ "$package_name" != "" ]]; then
+if [[ "$package_name" == "" ]]; then
     echo "Missing package name"
     exit 1
 fi
 
-if [[ "$repo_name" != "" ]]; then
+if [[ "$repo_name" == "" ]]; then
     echo "Missing repo name"
     exit 1
 fi
