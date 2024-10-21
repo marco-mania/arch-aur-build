@@ -12,19 +12,19 @@ Within the repo with the `Containerfile`:
 
 The following command will download AUR package, build it and add it to the repo:
 
-    podman run --rm -v /path/to/repos/myrepo/os/x86_64:/pkg arch-aur-build /bin/bash -c '/add <package>'
+    podman run --rm -v /path/to/repos/myrepo/os/x86_64:/pkg arch-aur-build /bin/bash -c '/add -p <packagename> -r <reponame>'
 
 ## Remove package from repo
 
-    podman run --rm -v /path/to/archlinux/repos/myrepo/os/x86_64:/pkg arch-aur-build /bin/bash -c '/remove <package>'
+    podman run --rm -v /path/to/archlinux/repos/myrepo/os/x86_64:/pkg arch-aur-build /bin/bash -c '/remove -p <packagename>  -r <reponame>'
 
 ## Check AUR packages versions in repo and build new package if new version available
 
-    podman run --rm -v /path/to/archlinux/repos/myrepo/os/x86_64:/pkg arch-aur-build /bin/bash -c '/update'
+    podman run --rm -v /path/to/archlinux/repos/myrepo/os/x86_64:/pkg arch-aur-build /bin/bash -c '/update -r <reponame>'
 
 ## Refresh repo
 
-    podman run --rm -v /path/to/archlinux/repos/myrepo/os/x86_64:/pkg arch-aur-build /bin/bash -c '/refresh'
+    podman run --rm -v /path/to/archlinux/repos/myrepo/os/x86_64:/pkg arch-aur-build /bin/bash -c '/refresh -r <reponame>'
 
 ## Compiled package location
 
