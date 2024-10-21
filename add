@@ -2,11 +2,6 @@
 
 set -e
 
-if [ "$#" -ne 1 ]; then
-  echo -e "Please provide AUR package name to build."
-  exit 1
-fi
-
 function parse_key_value {
 
     local filename="$1"
@@ -38,26 +33,42 @@ function parse_key_value {
 
 }
 
-if [[ "$2" == "--with-local-repo" ]]; then
-    echo "[localrepo]" >> /etc/pacman.conf
-    echo "SigLevel = Optional TrustAll" >> /etc/pacman.conf
-    echo "Server = file:///pkg" >> /etc/pacman.conf
+while getopts p:r: flag
+do
+    case "${flag}" in
+        p) package_name="${OPTARG}";;
+        r) repo_name="${OPTARG}";;
+    esac
+done
+
+if [[ "$package_name" != "" ]]; then
+    echo "Missing package name"
+    exit 1
+fi
+
+if [[ "$repo_name" != "" ]]; then
+    echo "Missing repo name"
+    exit 1
+fi
+
+if [[ -f "${repo_name}.db.tar.zst" ]]; then
+    echo "[${repo_name}]" >>/etc/pacman.conf
+    echo "SigLevel = Optional TrustAll" >>/etc/pacman.conf
+    echo "Server = file:///pkg" >>/etc/pacman.conf
     pacman -Sy
 fi
 
-package=$1
-
 cd /build
-mkdir $package
-chown -R makepkg:users $package
+mkdir $package_name
+chown -R makepkg:users $package_name
 
-sudo -u makepkg git clone --depth 1 https://aur.archlinux.org/$package.git $package
+sudo -u makepkg git clone --depth 1 https://aur.archlinux.org/$package_name.git $package_name
 
-cd $package
+cd $package_name
 
 pacman -Syu --noconfirm
 sudo -u makepkg makepkg --noconfirm -sf
-sudo -u makepkg makepkg --printsrcinfo > .SRCINFO
+sudo -u makepkg makepkg --printsrcinfo >.SRCINFO
 
 pkgbase=$(parse_key_value .SRCINFO pkgbase)
 pkgver=$(parse_key_value .SRCINFO pkgver)
@@ -72,4 +83,4 @@ mv /home/makepkg/out/* /pkg
 
 cd /pkg
 
-repo-add localrepo.db.tar.zst ${pkgbase}-${pkgver}-${pkgrel}-${arch}.pkg.tar.zst
+repo-add ${repo_name}.db.tar.zst ${pkgbase}-${pkgver}-${pkgrel}-${arch}.pkg.tar.zst

@@ -2,13 +2,26 @@
 
 set -e
 
-if [ "$#" -ne 1 ]; then
-  echo -e "Please provide AUR package name to remove."
-  exit 1
+while getopts p:r: flag
+do
+    case "${flag}" in
+        p) package_name="${OPTARG}";;
+        r) repo_name="${OPTARG}";;
+    esac
+done
+
+if [[ "$package_name" != "" ]]; then
+    echo "Missing package name"
+    exit 1
+fi
+
+if [[ "$repo_name" != "" ]]; then
+    echo "Missing repo name"
+    exit 1
 fi
 
 package=$1
 
 cd /pkg
 
-repo-remove localrepo.db.tar.zst "$package"
+repo-remove ${repo_name}.db.tar.zst "$package"

@@ -2,6 +2,18 @@
 
 set -e
 
+while getopts r: flag
+do
+    case "${flag}" in
+        r) repo_name="${OPTARG}";;
+    esac
+done
+
+if [[ "$repo_name" != "" ]]; then
+    echo "Missing repo name"
+    exit 1
+fi
+
 cd /pkg
 
-repo-add localrepo.db.tar.zst *.pkg.tar.zst
+repo-add ${repo_name}.db.tar.zst *.pkg.tar.zst
