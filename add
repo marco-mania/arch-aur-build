@@ -38,11 +38,12 @@ function parse_key_value {
 
 }
 
-
-echo "[localrepo]" >> /etc/pacman.conf
-echo "SigLevel = Optional TrustAll" >> /etc/pacman.conf
-echo "Server = file:///pkg" >> /etc/pacman.conf
-pacman -Sy
+if [[ "$2" == "--with-local-repo" ]]; then
+    echo "[localrepo]" >> /etc/pacman.conf
+    echo "SigLevel = Optional TrustAll" >> /etc/pacman.conf
+    echo "Server = file:///pkg" >> /etc/pacman.conf
+    pacman -Sy
+fi
 
 package=$1
 
