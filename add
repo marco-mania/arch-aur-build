@@ -51,7 +51,7 @@ if [[ "$repo_name" == "" ]]; then
     exit 1
 fi
 
-if [[ -f "${repo_name}.db.tar.zst" ]]; then
+if [[ -f "/pkg/${repo_name}.db.tar.zst" ]]; then
     echo "[${repo_name}]" >>/etc/pacman.conf
     echo "SigLevel = Optional TrustAll" >>/etc/pacman.conf
     echo "Server = file:///pkg" >>/etc/pacman.conf
