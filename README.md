@@ -18,7 +18,7 @@ The following command will download AUR package, build it and add it to the repo
 
     podman run --rm -v /path/to/archlinux/repos/myrepo/os/x86_64:/pkg arch-aur-build /bin/bash -c '/remove -p <packagename>  -r <reponame>'
 
-## Check AUR packages versions in repo and build new package if new version available
+## Check AUR packages versions in repo and build new package if new version is available
 
     podman run --rm -v /path/to/archlinux/repos/myrepo/os/x86_64:/pkg arch-aur-build /bin/bash -c '/update -r <reponame>'
 
