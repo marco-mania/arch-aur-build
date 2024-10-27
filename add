@@ -2,37 +2,6 @@
 
 set -e
 
-function parse_key_value {
-
-    local filename="$1"
-    local fkey="$2"
-
-    if [[ ! -f ${filename} ]]; then
-        echo "Error: File ${file} is not available."
-        return 1
-    fi
-
-    if [[ "$2" == "" ]]; then
-        echo "Key name not provided."
-        return 1
-    fi
-
-    cat ${filename} | while read line || [[ -n $line ]]; do
-        [[ ${line//[[:space:]]/} =~ ^#.* || -z "$line" ]] && continue
-        echo $line | tr "=" "\n" | while read -r key; do
-            read -r value
-            #echo "key: ${key}, value: ${value}";
-            if [[ "${key}" == "${fkey}" ]]; then
-                echo -n ${value}
-                break
-            fi
-        done
-    done
-
-    return 0
-
-}
-
 while getopts p:r: flag
 do
     case "${flag}" in
@@ -51,7 +20,7 @@ if [[ "$repo_name" == "" ]]; then
     exit 1
 fi
 
-if [[ -f "${repo_name}.db.tar.zst" ]]; then
+if [[ -f "/pkg/${repo_name}.db.tar.zst" ]]; then
     echo "[${repo_name}]" >>/etc/pacman.conf
     echo "SigLevel = Optional TrustAll" >>/etc/pacman.conf
     echo "Server = file:///pkg" >>/etc/pacman.conf
@@ -60,27 +29,33 @@ fi
 
 cd /build
 mkdir $package_name
-chown -R makepkg:users $package_name
+chown -R builder:users $package_name
 
-sudo -u makepkg git clone --depth 1 https://aur.archlinux.org/$package_name.git $package_name
+sudo -u builder git clone --depth 1 https://aur.archlinux.org/$package_name.git $package_name
 
 cd $package_name
 
 pacman -Syu --noconfirm
-sudo -u makepkg makepkg --noconfirm -sf
-sudo -u makepkg makepkg --printsrcinfo >.SRCINFO
-
-pkgbase=$(parse_key_value .SRCINFO pkgbase)
-pkgver=$(parse_key_value .SRCINFO pkgver)
-pkgrel=$(parse_key_value .SRCINFO pkgrel)
-arch=$(parse_key_value .SRCINFO arch)
+sudo -u builder makepkg --noconfirm -sf
+sudo -u builder makepkg --printsrcinfo >.SRCINFO
 
 if [ "$arch" != "any" ]; then
     arch=$(uname -m)
 fi
 
-mv /home/makepkg/out/* /pkg
+cp /home/builder/out/* /pkg
+
+# Get all the package file names
+
+pkgs=()
+for pkg in /home/builder/out/*.pkg.tar.zst; do
+    if [[ -f "$pkg" ]]; then
+        pkgs+=("$pkg")
+    fi
+done
 
 cd /pkg
 
-repo-add ${repo_name}.db.tar.zst ${pkgbase}-${pkgver}-${pkgrel}-${arch}.pkg.tar.zst
+for p in "${pkgs[@]}"; do
+    repo-add ${repo_name}.db.tar.zst ${p}
+done
